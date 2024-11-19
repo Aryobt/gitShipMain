@@ -41,7 +41,8 @@ boolean atWarp;
 boolean showDialogue;
 
 Star[] stars = new Star[400];
-Planet[] planets;
+SpaceStation alpha;
+Planet earth;
 Person person;
 Checksum healthbar;
 Junk junk;
@@ -70,10 +71,9 @@ void draw(){
      stars[i].display();
     }
     //location
-    for(Planet planet : planets){
-      planet.update();
-      planet.display();
-    }
+     alpha.display();
+     earth.update();
+     earth.display();
   
     //viewscreen
     if(showDialogue){
@@ -100,10 +100,14 @@ void init(){
   
   //checksum
   healthbar = new Checksum();
+  healthbar.checksum += pow(2, 2);
   //starfield simulation
   for(int i = 0; i < stars. length; i++){
     stars[i] = new Star();
   }
+  char[] c = binary(healthbar.checksum).toCharArray();
+  c[c.length - 3] = '1';
+  healthbar.checksum = unbinary(new String(c));
   //cargo
   loadCargo();
   println("Cargo manifest:");
@@ -111,6 +115,7 @@ void init(){
     println(item);
   }
   //location
+  earth = new Planet(2*width/3, height/4, 50);
   //150 to 450, 100 to 200, 50 to 375, 0 to 50
   planets = new Planet[3];
   planets[2] = new Planet(3*width/3, height/3.5, 50, 1, 5, 48);
@@ -119,6 +124,18 @@ void init(){
   char[] p = binary(healthbar.checksum).toCharArray();
   p[p.length - 5] = '1';
   healthbar.checksum = unbinary(new String(p));
+  char[] bin = binary(healthbar.checksum).toCharArray();
+  bin[bin.length-4] = '1';
+  bin[bin.length-8] = '1';
+  
+  //Space Station Alpha
+  alpha = new SpaceStation();
+  bin[bin.length-8] = '0';
+  //Space Station Alpha
+  
+  healthbar.checksum = unbinary(new String(bin));
+  
+  earth = new Planet(2*width/3, height/4, 50);
   //dialogue
   person = new Person();
   //junk
@@ -129,12 +146,13 @@ void init(){
 
 void dropOutOfWarp(){
   speed = 0.00;
-  float rndX = 442; // 150 to 450
-  float rndY = 140; // 100, 200
+  float rndX = 383; // 150 to 450
+  float rndY = 121; // 100, 200
   x = map(rndX, 0.25*width, 0.75*width, 0, 10);
   y = map(rndY, 0.25*height, 0.5*height, 0, 10);
-  planets[0].sliders();
-  location = "Thruple System";
+  earth = new Planet(rndX, rndY, random(50, 375));
+  earth.sliders();
+  location = "SCAET Colony";
 }
 
 void noSignal(){
